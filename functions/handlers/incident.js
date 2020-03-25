@@ -37,6 +37,10 @@ exports.getIncident = (req, res) => {
     })
 };
 
+exports.markNotificationsRead = (req, res) => {
+
+};
+
 const loopThroughData = (res, data) => {
     let incidents = [];
     data.forEach(doc => {

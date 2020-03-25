@@ -5,7 +5,7 @@ const {database} = require('./util/admin');
 const cors = require('cors');
 app.use(cors());
 
-const {getAllIncidents, unresolved, getIncident} = require('./handlers/incident');
+const {getAllIncidents, unresolved, getIncident, markNotificationsRead} = require('./handlers/incident');
 const {getAllUsers} = require('./handlers/user');
 const {addContact, loginContact, contactImage, addContactDetails, getContact} = require('./handlers/contact');
 const {dispatchHelp} = require('./handlers/dispatchHelp');
@@ -14,6 +14,7 @@ const {dispatchHelp} = require('./handlers/dispatchHelp');
 app.get('/incidents', getAllIncidents);
 app.get('/unresolved', firebaseAuth, unresolved);
 app.get('/incident/:incidentId', firebaseAuth, getIncident);
+app.post('/notifications', firebaseAuth, markNotificationsRead);
 //Fetch all Users
 app.get('/users', getAllUsers);
 //Dispatch Assistance
@@ -27,7 +28,7 @@ app.get('/contact/:contactId', getContact);
 
 exports.api = functions.https.onRequest(app);
 
-exports.incidentAdded = functions.region('us-central1').firestore.document('incidents/{incidentId}').onCreate(
+exports.onIncidentAdded = functions.region('us-central1').firestore.document('incidents/{incidentId}').onCreate(
     snapshot => {
         let notifications = [];
         database.collection('users').get().then(usersDoc => {
@@ -59,3 +60,4 @@ exports.incidentAdded = functions.region('us-central1').firestore.document('inci
             console.error(err);
         });
     });
+
