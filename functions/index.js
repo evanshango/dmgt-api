@@ -13,7 +13,7 @@ const {dispatchHelp} = require('./handlers/dispatchHelp');
 //Incidents routes
 app.get('/incidents', getAllIncidents);
 app.get('/unresolved', firebaseAuth, unresolved);
-app.get('/incident/:incidentId', firebaseAuth, getIncident);
+app.get('/incidents/:incidentId', getIncident);
 app.post('/notifications', firebaseAuth, markNotificationsRead);
 //Fetch all Users
 app.get('/users', getAllUsers);
@@ -43,10 +43,8 @@ exports.onIncidentAdded = functions.region('us-central1').firestore.document('in
                             incidentId: doc.id
                         });
                     });
-                    let notification = {};
                     notifications.forEach(doc => {
-                        notification = doc;
-                        return database.doc(`/notifications/${doc.receiver}`).set(notification)
+                        return database.doc(`/notifications/${doc.receiver}`).set(doc)
                     })
                 } else {
                     console.log('does not exist')
