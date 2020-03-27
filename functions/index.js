@@ -7,7 +7,7 @@ app.use(cors());
 
 const {getAllIncidents, unresolved, getIncident, markNotificationsRead} = require('./handlers/incident');
 const {getAllUsers} = require('./handlers/user');
-const {addContact, loginContact, contactImage, addContactDetails, getContact} = require('./handlers/contact');
+const {addContact, loginContact, contactImage, addContactDetails, getContact, getContacts} = require('./handlers/contact');
 const {dispatchHelp} = require('./handlers/dispatchHelp');
 
 //Incidents routes
@@ -22,6 +22,7 @@ app.get('/incident/:incidentId/dispatch/help', firebaseAuth, dispatchHelp);
 //Contact routes
 app.post('/new/contact', addContact);
 app.post('/login', loginContact);
+app.get('/contacts', getContacts);
 app.post('/contact/image', firebaseAuth, contactImage);
 app.post('/contact/details', firebaseAuth, addContactDetails);
 app.get('/contact/:contactId', getContact);

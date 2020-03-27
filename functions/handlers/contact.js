@@ -15,6 +15,21 @@ exports.getContact = (req, res) => {
     })
 };
 
+exports.getContacts = (req, res) => {
+    database.collection('contacts').get().then(data => {
+        let contacts = [];
+        data.forEach(contact => {
+            contacts.push({
+                contactEmail: contact.data().contactEmail
+            })
+        });
+        return res.json(contacts)
+    }).catch(err => {
+        console.error(err);
+        return res.status(500).json({message: 'Unable to fetch contacts'})
+    })
+};
+
 exports.addContact = (req, res) => {
     const newContact = {
         contactEmail: req.body.contactEmail,
