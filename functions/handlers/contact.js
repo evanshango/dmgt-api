@@ -5,25 +5,24 @@ firebase.initializeApp(config);
 const {validateAddContactData, validateLoginContact, reduceContactDetails} = require('../util/validators');
 
 exports.getContact = (req, res) => {
-    let contact = {};
     database.doc(`/contacts/${req.params.contactId}`).get().then(doc => {
         if (!doc.exists){
             return res.status(404).json({error: 'Contact not found'})
         }
-        contact = doc.data();
-        return res.json(contact);
+        return res.json(doc.data());
     })
 };
 
 exports.getContacts = (req, res) => {
     database.collection('contacts').get().then(data => {
         let contacts = [];
-        data.forEach(contact => {
+        data.forEach(doc => {
             contacts.push({
-                contactEmail: contact.data().contactEmail
-            })
+                id: doc.data().contactId,
+                email: doc.data().contactEmail
+            });
         });
-        return res.json(contacts)
+        return res.json(contacts);
     }).catch(err => {
         console.error(err);
         return res.status(500).json({message: 'Unable to fetch contacts'})
@@ -84,10 +83,15 @@ exports.loginContact = (req, res) => {
     const {valid, errors} = validateLoginContact(contact);
     if (!valid) return res.status(400).json(errors);
 
+    let contactId;
     firebase.auth().signInWithEmailAndPassword(contact.email, contact.password).then(data => {
+        contactId = data.user.uid;
         return data.user.getIdToken();
     }).then(token => {
-        return res.json({token});
+        let contact = {};
+        contact.contactId = contactId;
+        contact.token = token;
+        return res.json(contact);
     }).catch(err => {
         console.log(err);
         if (err.code === 'auth/wrong-password') {
