@@ -5,11 +5,13 @@ firebase.initializeApp(config);
 const {validateAddContactData, validateLoginContact, reduceContactDetails} = require('../util/validators');
 
 exports.getContact = (req, res) => {
+    let contactData = {};
     database.doc(`/contacts/${req.params.contactId}`).get().then(doc => {
         if (!doc.exists){
             return res.status(404).json({error: 'Contact not found'})
         }
-        return res.json(doc.data());
+        contactData.credentials = doc.data();
+        return res.json(contactData);
     })
 };
 
