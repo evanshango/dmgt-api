@@ -39,6 +39,7 @@ exports.reduceContactDetails = data => {
     let contactDetails = {};
 
     if (!isEmpty(data.contactInfo.trim())) contactDetails.contactInfo = data.contactInfo;
+    if (!isEmpty(data.contactNo.trim())) contactDetails.contactNo = data.contactNo;
     if (!isEmpty(data.website.trim())) {
         if (data.website.trim().substring(0, 4) !== 'http') {
             contactDetails.website = `http://${data.website.trim()}`
