@@ -6,7 +6,7 @@ const {validateAddContactData, validateLoginContact, reduceContactDetails} = req
 
 exports.getContact = (req, res) => {
     let contactData = {};
-    database.doc(`/contacts/${req.params.contactId}`).get().then(doc => {
+    database.doc(`/contacts/${req.user.uid}`).get().then(doc => {
         if (!doc.exists){
             return res.status(404).json({error: 'Contact not found'})
         }

@@ -25,7 +25,7 @@ app.post('/login', loginContact);
 app.get('/contacts', getContacts);
 app.post('/contact/image', firebaseAuth, contactImage);
 app.post('/contact/details', firebaseAuth, addContactDetails);
-app.get('/contact/:contactId', getContact);
+app.get('/contact', firebaseAuth, getContact);
 
 exports.api = functions.https.onRequest(app);
 
