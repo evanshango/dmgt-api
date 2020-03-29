@@ -153,3 +153,69 @@ exports.contactImage = (req, res) => {
     });
     busboy.end(req.rawBody);
 };
+
+exports.addAdmin = (req, res) => {
+    const newAdmin = {
+        adminEmail: req.body.adminEmail,
+        adminName: req.body.adminName,
+        password: req.body.password
+    };
+    const isEmpty = string => {
+        return string.trim() === '';
+    };
+    if (isEmpty(newAdmin.adminEmail) || isEmpty(newAdmin.adminName) || isEmpty(newAdmin.password)){
+        return res.status(500).json({general: 'All fields are required'})
+    } else {
+        database.doc(`/admins/${newAdmin.adminEmail}`).get().then(doc => {
+            if (doc.exists) {
+                return res.status(400).json({adminEmail: 'is already taken'})
+            } else {
+                return firebase.auth().createUserWithEmailAndPassword(newAdmin.adminEmail, newAdmin.password);
+            }
+        }).then(data => {
+            const adminDetails = {
+                adminId: data.user.uid,
+                adminEmail: newAdmin.adminEmail,
+                adminName: newAdmin.adminName,
+                regDate: new Date().toISOString(),
+            };
+            return database.doc(`/admins/${data.user.uid}`).set(adminDetails);
+        }).then(() => {
+            return res.status(201).json({message: 'Admin added successfully'});
+        }).catch(err => {
+            console.error(err);
+            if (err.code === 'auth/email-already-in-use') {
+                return res.status(400).json({email: 'Already in use'})
+            } else {
+                return res.status(500).json({error: err.code})
+            }
+        })
+    }
+};
+
+exports.loginAdmin = (req, res) => {
+    const admin = {
+        email: req.body.email,
+        password: req.body.password
+    };
+    const {valid, errors} = validateLoginContact(admin);
+    if (!valid) return res.status(400).json(errors);
+
+    let adminId;
+    firebase.auth().signInWithEmailAndPassword(admin.email, admin.password).then(data => {
+        adminId = data.user.uid;
+        return data.user.getIdToken();
+    }).then(token => {
+        let admin = {};
+        admin.adminId = adminId;
+        admin.token = token;
+        return res.json(admin);
+    }).catch(err => {
+        console.log(err);
+        if (err.code === 'auth/wrong-password') {
+            return res.status(403).json({general: 'Wrong credentials. Please try again'})
+        } else if (err.code === 'auth/user-not-found') {
+            return res.status(403).json({email: 'User no found'})
+        } else return res.status(500).json({error: err.code})
+    })
+};

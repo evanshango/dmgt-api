@@ -7,9 +7,13 @@ app.use(cors());
 
 const {getAllIncidents, unresolved, getIncident, markNotificationsRead} = require('./handlers/incident');
 const {getAllUsers} = require('./handlers/user');
-const {addContact, loginContact, contactImage, addContactDetails, getContact, getContacts} = require('./handlers/contact');
+const {
+    addContact, loginContact, contactImage, addContactDetails, getContact, getContacts, addAdmin, loginAdmin
+} = require('./handlers/contact');
 const {dispatchHelp} = require('./handlers/dispatchHelp');
 
+app.post('/new/admin', addAdmin);
+app.post('/login/admin', loginAdmin);
 //Incidents routes
 app.get('/incidents', getAllIncidents);
 app.get('/unresolved', firebaseAuth, unresolved);
