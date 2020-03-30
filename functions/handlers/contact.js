@@ -7,7 +7,7 @@ const {validateAddContactData, validateLoginContact, reduceContactDetails} = req
 exports.getContact = (req, res) => {
     let contactData = {};
     database.doc(`/contacts/${req.user.uid}`).get().then(doc => {
-        if (!doc.exists){
+        if (!doc.exists) {
             return res.status(404).json({error: 'Contact not found'})
         }
         contactData.credentials = doc.data();
@@ -16,18 +16,18 @@ exports.getContact = (req, res) => {
 };
 
 exports.getAdmin = (req, res) => {
-  let adminData = {};
-  database.doc(`/admins/${req.user.uid}`).get().then(doc => {
-      if (!doc.exists){
-          return res.status(404).json({error: 'Contact not found'})
-      }
-      adminData.adminId = doc.data().adminId;
-      adminData.name = doc.data().adminName;
-      adminData.email = doc.data().adminEmail;
-      adminData.regDate = doc.data().regDate;
-      adminData.admin = true;
-      return res.json({credentials: adminData});
-  })
+    let adminData = {};
+    database.doc(`/admins/${req.user.uid}`).get().then(doc => {
+        if (!doc.exists) {
+            return res.status(404).json({error: 'Contact not found'})
+        }
+        adminData.adminId = doc.data().adminId;
+        adminData.name = doc.data().adminName;
+        adminData.email = doc.data().adminEmail;
+        adminData.regDate = doc.data().regDate;
+        adminData.admin = true;
+        return res.json({credentials: adminData});
+    })
 };
 
 exports.getContacts = (req, res) => {
@@ -57,31 +57,25 @@ exports.addContact = (req, res) => {
     const {valid, errors} = validateAddContactData(newContact);
     if (!valid) return res.status(400).json(errors);
     const noImg = 'avatar.png';
-    let accessToken, contactId;
-    database.doc(`/contacts/${newContact.contactName}`).get().then(doc => {
+    let contactDetails = {};
+    database.doc(`/contacts/${newContact.contactEmail}`).get().then(doc => {
         if (doc.exists) {
-            return res.status(400).json({contactName: 'is already taken'})
+            return res.status(400).json({contactEmail: 'is already taken'})
         } else {
             return firebase.auth().createUserWithEmailAndPassword(newContact.contactEmail, newContact.password);
         }
     }).then(data => {
-        contactId = data.user.uid;
-        return data.user.getIdToken();
-    }).then(token => {
-        accessToken = token;
-        const contactDetails = {
-            contactId: contactId,
-            contactEmail: newContact.contactEmail,
-            contactName: newContact.contactName,
-            contactNo: newContact.contactNo,
-            contactInfo: "Our organization is dedicated to serve everyone without considering ones status in the " +
-                "society, therefore, we are here to assist anywhere we can",
-            imageUrl: `https://firebasestorage.googleapis.com/v0/b/${config.storageBucket}/o/${noImg}?alt=media`,
-            regDate: new Date().toISOString(),
-        };
-        return database.doc(`/contacts/${contactId}`).set(contactDetails);
+        contactDetails.contactId = data.user.uid;
+        contactDetails.contactEmail = newContact.contactEmail;
+        contactDetails.contactName = newContact.contactName;
+        contactDetails.contactNo = newContact.contactNo;
+        contactDetails.contactInfo = "Our organization is dedicated to serve everyone without considering ones status" +
+            " in the " + "society, therefore, we are here to assist anywhere we can";
+        contactDetails.imageUrl = `https://firebasestorage.googleapis.com/v0/b/${config.storageBucket}/o/${noImg}?alt=media`;
+        contactDetails.regDate = new Date().toISOString();
+        return database.doc(`/contacts/${data.user.uid}`).set(contactDetails);
     }).then(() => {
-        return res.status(201).json({token: accessToken});
+        return res.status(201).json(contactDetails);
     }).catch(err => {
         console.error(err);
         if (err.code === 'auth/email-already-in-use') {
@@ -178,7 +172,7 @@ exports.addAdmin = (req, res) => {
     const isEmpty = string => {
         return string.trim() === '';
     };
-    if (isEmpty(newAdmin.adminEmail) || isEmpty(newAdmin.adminName) || isEmpty(newAdmin.password)){
+    if (isEmpty(newAdmin.adminEmail) || isEmpty(newAdmin.adminName) || isEmpty(newAdmin.password)) {
         return res.status(500).json({general: 'All fields are required'})
     } else {
         database.doc(`/admins/${newAdmin.adminEmail}`).get().then(doc => {
