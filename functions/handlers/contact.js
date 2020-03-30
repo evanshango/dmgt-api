@@ -31,13 +31,10 @@ exports.getAdmin = (req, res) => {
 };
 
 exports.getContacts = (req, res) => {
-    database.collection('contacts').get().then(data => {
+    database.collection('contacts').get().then(snapshot => {
         let contacts = [];
-        data.forEach(doc => {
-            contacts.push({
-                id: doc.data().contactId,
-                email: doc.data().contactEmail
-            });
+        snapshot.forEach(doc => {
+            contacts.push(doc.data())
         });
         return res.json(contacts);
     }).catch(err => {
@@ -79,7 +76,7 @@ exports.addContact = (req, res) => {
     }).catch(err => {
         console.error(err);
         if (err.code === 'auth/email-already-in-use') {
-            return res.status(400).json({email: 'Already in use'})
+            return res.status(400).json({contactEmail: 'Already in use'})
         } else {
             return res.status(500).json({error: err.code})
         }
