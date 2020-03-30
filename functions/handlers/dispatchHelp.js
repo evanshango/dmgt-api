@@ -22,7 +22,7 @@ exports.dispatchHelp = (req, res) => {
             return database.collection('resolved').add(resolveData).then(() => {
                 return incident.update({resolved: true})
             }).then(() => {
-                return res.json({message: 'Help dispatched'})
+                return res.json(resolveData)
             }).catch(err => {
                 console.error(err);
                 return res.status(500).json({error: err.code})

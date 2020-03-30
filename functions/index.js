@@ -1,6 +1,7 @@
 const functions = require('firebase-functions');
 const app = require('express')();
 const firebaseAuth = require('./util/fbAuth');
+const fbAdminAuth = require('./util/fbAdminAuth');
 const {database} = require('./util/admin');
 const cors = require('cors');
 app.use(cors());
@@ -8,15 +9,16 @@ app.use(cors());
 const {getAllIncidents, unresolved, getIncident, markNotificationsRead} = require('./handlers/incident');
 const {getAllUsers} = require('./handlers/user');
 const {
-    addContact, loginContact, contactImage, addContactDetails, getContact, getContacts, addAdmin, loginAdmin
+    addContact, loginContact, contactImage, addContactDetails, getContact, getContacts, addAdmin, loginAdmin, getAdmin
 } = require('./handlers/contact');
 const {dispatchHelp} = require('./handlers/dispatchHelp');
 
 app.post('/new/admin', addAdmin);
 app.post('/login/admin', loginAdmin);
+app.get('/admin', fbAdminAuth, getAdmin);
 //Incidents routes
 app.get('/incidents', getAllIncidents);
-app.get('/unresolved', firebaseAuth, unresolved);
+app.get('/unresolved/incidents', unresolved);
 app.get('/incidents/:incidentId', getIncident);
 app.post('/notifications', firebaseAuth, markNotificationsRead);
 //Fetch all Users

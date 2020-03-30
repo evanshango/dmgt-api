@@ -15,6 +15,21 @@ exports.getContact = (req, res) => {
     })
 };
 
+exports.getAdmin = (req, res) => {
+  let adminData = {};
+  database.doc(`/admins/${req.user.uid}`).get().then(doc => {
+      if (!doc.exists){
+          return res.status(404).json({error: 'Contact not found'})
+      }
+      adminData.adminId = doc.data().adminId;
+      adminData.name = doc.data().adminName;
+      adminData.email = doc.data().adminEmail;
+      adminData.regDate = doc.data().regDate;
+      adminData.admin = true;
+      return res.json({credentials: adminData});
+  })
+};
+
 exports.getContacts = (req, res) => {
     database.collection('contacts').get().then(data => {
         let contacts = [];
