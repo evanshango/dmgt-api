@@ -48,3 +48,27 @@ exports.reduceContactDetails = data => {
     if (!isEmpty(data.location.trim())) contactDetails.location = data.location;
     return contactDetails;
 };
+
+exports.disasterBody = data => {
+    let disasterBody = {};
+    if (!isEmpty(data.name.trim())) disasterBody.name = data.name;
+    return disasterBody;
+};
+
+exports.educationBody = data => {
+    let educationInfo = {};
+    if (!isEmpty(data.name.trim())) educationInfo.name = data.name;
+    return educationInfo;
+};
+
+exports.firstAidBody = data => {
+    let firstAid = {};
+    if (!isEmpty(data.name.trim())) firstAid.name = data.name;
+    return firstAid;
+};
+
+exports.medicalInfo = data => {
+    let medicalBody = {};
+    if (!isEmpty(data.name.trim())) medicalBody.name = data.name;
+    return medicalBody;
+};

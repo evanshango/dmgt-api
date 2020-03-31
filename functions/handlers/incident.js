@@ -26,7 +26,6 @@ exports.getIncident = (req, res) => {
             geoPoint: doc.data().geoPoint,
             imageUrl: doc.data().imageUrl,
             date: doc.data().date,
-            // resolved: doc.data().resolved,
             time: doc.data().time,
             userId: doc.data().userId
         };
