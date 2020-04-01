@@ -11,7 +11,7 @@ const {getAllUsers} = require('./handlers/user');
 const {
     addContact, loginContact, contactImage, addContactDetails, getContact, getContacts, addAdmin, loginAdmin, getAdmin
 } = require('./handlers/contact');
-const {fetchGeneralInfo, addGeneralInfo} = require('./handlers/generalInfo');
+const {fetchGeneralInfo, addGeneralInfo, getSpecificInfoData} = require('./handlers/generalInfo');
 const {dispatchHelp} = require('./handlers/dispatchHelp');
 
 app.post('/new/admin', addAdmin);
@@ -36,6 +36,7 @@ app.get('/contact', firebaseAuth, getContact);
 //General Educational Info
 app.get('/general', fetchGeneralInfo);
 app.post('/new/:infoId/content', firebaseAuth, addGeneralInfo);
+app.get('/general/:infoId', getSpecificInfoData);
 
 exports.api = functions.https.onRequest(app);
 
