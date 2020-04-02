@@ -15,24 +15,28 @@ exports.fetchGeneralInfo = (req, res) => {
 };
 
 exports.addGeneralInfo = (req, res) => {
-    let disasterInfo = disasterBody(req.body);
-    let medicalInfoBody = medicalInfo(req.body);
-    let educationInfo = educationBody(req.body);
-    let firstAidInfo = firstAidBody(req.body);
-    database.doc(`/generalInfo/${req.params.infoId}`).get().then(doc => {
-        let infoId = req.params.infoId;
-        if (doc.data().infoType === 'Disasters') {
-            addDisaster(disasterInfo, res, req, infoId)
-        } else if (doc.data().infoType === 'Medical Service') {
-            addMedicalInfo(medicalInfoBody, res, req, infoId)
-        } else if (doc.data().infoType === 'Educational') {
-            addEducationalInfo(educationInfo, res, req, infoId)
-        } else if (doc.data().infoType === 'First Aid') {
-            addFirstAidInfo(firstAidInfo, res, req, infoId)
-        } else {
-            return res.status(404).json({general: 'Not found'})
-        }
-    }).catch(err => console.log(err));
+    if (req.body.name !== ''){
+        let disasterInfo = disasterBody(req.body);
+        let medicalInfoBody = medicalInfo(req.body);
+        let educationInfo = educationBody(req.body);
+        let firstAidInfo = firstAidBody(req.body);
+        database.doc(`/generalInfo/${req.params.infoId}`).get().then(doc => {
+            let infoId = req.params.infoId;
+            if (doc.data().infoType === 'Disasters') {
+                addDisaster(disasterInfo, res, req, infoId)
+            } else if (doc.data().infoType === 'Medical Service') {
+                addMedicalInfo(medicalInfoBody, res, req, infoId)
+            } else if (doc.data().infoType === 'Educational') {
+                addEducationalInfo(educationInfo, res, req, infoId)
+            } else if (doc.data().infoType === 'First Aid') {
+                addFirstAidInfo(firstAidInfo, res, req, infoId)
+            } else {
+                return res.status(404).json({general: 'Not found'})
+            }
+        }).catch(err => console.log(err));
+    } else {
+        return res.status(500).json({name: 'Cannot be empty'})
+    }
 };
 
 exports.getSpecificInfoData = (req, res) => {
@@ -122,7 +126,7 @@ function getDisasters(infoId, res) {
                 category: doc.data().category
             })
         });
-        return res.status(200).json(disasters)
+        return res.status(200).json({items: disasters})
     })
 }
 
@@ -136,7 +140,7 @@ function getEducationalInfo(infoId, res) {
                 extraInfo: doc.data().extraInfo
             })
         });
-        return res.status(200).json(educationalInfo)
+        return res.status(200).json({items: educationalInfo})
     })
 }
 
@@ -150,7 +154,7 @@ function getMedicalInfo(infoId, res) {
                 hotline: doc.data().hotline
             })
         });
-        return res.status(200).json(medicalInfo)
+        return res.status(200).json({items: medicalInfo})
     })
 }
 
@@ -164,7 +168,7 @@ function getFirstAidInfo(infoId, res) {
                 aidInfo: doc.data().aidInfo
             })
         });
-        return res.status(200).json(firstAidInfo)
+        return res.status(200).json({items: firstAidInfo})
     })
 }
 
