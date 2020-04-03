@@ -52,7 +52,7 @@ exports.onIncidentAdded = functions.region('us-central1').firestore.document('in
                             sender: doc.data().username,
                             receiver: userDoc.data().userId,
                             read: false,
-                            incidentId: doc.id
+                            incidentId: snapshot.data().incidentId
                         });
                     });
                     notifications.forEach(doc => {
