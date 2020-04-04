@@ -56,7 +56,8 @@ exports.onIncidentAdded = functions.region('us-central1').firestore.document('in
                         });
                     });
                     notifications.forEach(doc => {
-                        return database.doc(`/notifications/${doc.incidentId}`).set(doc)
+                        return database.doc(`/notifications/${doc.receiver}`).collection('notifications')
+                            .doc(doc.incidentId).set(doc)
                     })
                 } else {
                     console.log('does not exist')
